@@ -8,6 +8,11 @@ type User = {
   email: string;
   first_name: string;
   last_name: string;
+  avatar_url?: string | null;
+  cover_url?: string | null;
+  headline?: string | null;
+  bio?: string | null;
+  location?: string | null;
 };
 
 type AuthContextType = {
@@ -16,6 +21,7 @@ type AuthContextType = {
   isLoading: boolean;
   login: (credentials: { email: string; password: string }) => Promise<void>;
   logout: () => Promise<void>;
+  updateUser: (patch: Partial<User>) => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -73,6 +79,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push('/login');
   };
 
+  const updateUser = (patch: Partial<User>) => {
+    setUser((prev) => (prev ? { ...prev, ...patch } : prev));
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -81,6 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         login,
         logout,
+        updateUser,
       }}
     >
       {children}

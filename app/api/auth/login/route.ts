@@ -24,7 +24,7 @@ export async function POST(request: Request) {
 
     const { data: user, error: fetchError } = await supabase
       .from('users')
-      .select('id, email, password_hash, first_name, last_name, created_at')
+      .select('id, email, password_hash, first_name, last_name, avatar_url, cover_url, headline, bio, location, created_at')
       .eq('email', email)
       .single();
 
@@ -45,6 +45,11 @@ export async function POST(request: Request) {
           email: user.email,
           first_name: user.first_name,
           last_name: user.last_name,
+          avatar_url: user.avatar_url,
+          cover_url: user.cover_url,
+          headline: user.headline,
+          bio: user.bio,
+          location: user.location,
           created_at: user.created_at,
         },
       },

@@ -85,6 +85,7 @@ export async function GET(request: Request) {
     const userId = getUserId(request);
     const { searchParams } = new URL(request.url);
     const cursor = decodeCursor(searchParams.get('cursor'));
+    const profileUserId = searchParams.get('user_id');
 
     const limit = 10;
     const query = supabase
@@ -98,6 +99,12 @@ export async function GET(request: Request) {
       query.or(
         `created_at.lt.${cursor.createdAt},and(created_at.eq.${cursor.createdAt},id.lt.${cursor.id})`
       );
+    }
+
+    // Optional profile scope: only posts by a given author. Index
+    // idx_posts_user_created serves this access pattern.
+    if (profileUserId) {
+      query.eq('user_id', profileUserId);
     }
 
     // Defense-in-depth visibility filter. RLS already enforces this at the DB

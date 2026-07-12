@@ -40,6 +40,24 @@ export const createPostSchema = z.object({
   is_private: z.boolean().optional().default(false),
 });
 
+export const updateProfileSchema = z.object({
+  avatar_url: z
+    .preprocess((v) => (v === '' || v === null ? undefined : v), z.string().url('Invalid avatar URL'))
+    .optional(),
+  cover_url: z
+    .preprocess((v) => (v === '' || v === null ? undefined : v), z.string().url('Invalid cover URL'))
+    .optional(),
+  headline: z
+    .preprocess((v) => (v === '' ? undefined : v), z.string().trim().max(120, 'Headline must not exceed 120 characters'))
+    .optional(),
+  bio: z
+    .preprocess((v) => (v === '' ? undefined : v), z.string().trim().max(500, 'Bio must not exceed 500 characters'))
+    .optional(),
+  location: z
+    .preprocess((v) => (v === '' ? undefined : v), z.string().trim().max(120, 'Location must not exceed 120 characters'))
+    .optional(),
+});
+
 export const createCommentSchema = z.object({
   post_id: z.string().uuid('Invalid post_id'),
   content: z

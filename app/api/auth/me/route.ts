@@ -14,7 +14,7 @@ export async function GET(request: Request) {
 
   const { data, error } = await supabase
     .from('users')
-    .select('id, email, first_name, last_name')
+    .select('id, email, first_name, last_name, avatar_url, cover_url, headline, bio, location')
     .eq('id', session.userId)
     .single();
 
@@ -28,6 +28,11 @@ export async function GET(request: Request) {
       email: data.email,
       first_name: data.first_name,
       last_name: data.last_name,
+      avatar_url: data.avatar_url,
+      cover_url: data.cover_url,
+      headline: data.headline,
+      bio: data.bio,
+      location: data.location,
     },
   });
 }

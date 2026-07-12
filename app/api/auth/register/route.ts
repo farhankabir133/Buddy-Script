@@ -42,7 +42,7 @@ export async function POST(request: Request) {
         first_name,
         last_name,
       })
-      .select('id, email, first_name, last_name, created_at')
+      .select('id, email, first_name, last_name, avatar_url, cover_url, headline, bio, location, created_at')
       .single();
 
     if (insertError || !user) {
@@ -52,7 +52,23 @@ export async function POST(request: Request) {
       );
     }
 
-    const response = NextResponse.json({ user }, { status: 201 });
+    const response = NextResponse.json(
+      {
+        user: {
+          id: user.id,
+          email: user.email,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          avatar_url: user.avatar_url,
+          cover_url: user.cover_url,
+          headline: user.headline,
+          bio: user.bio,
+          location: user.location,
+          created_at: user.created_at,
+        },
+      },
+      { status: 201 }
+    );
     setSessionCookie(response, { userId: user.id });
     return response;
   } catch {

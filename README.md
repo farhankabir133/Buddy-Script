@@ -267,11 +267,18 @@ comment_likes(user_id uuid, comment_id uuid, pk(user_id, comment_id))
 2. Apply the database schema in the **SQL Editor**:
    - **Fresh database:** run `supabase/migrations/migration.sql` (creates tables,
      indexes, RLS policies, triggers, counters).
-   - **Base schema already applied:** run the idempotent
-     `supabase/migrations/0002_rls_counters.sql` to add the RLS policies, indexes,
-     denormalized `like_count`/`comment_count` columns, and sync triggers without
-     touching the existing tables.
-3. Create a `post-images` Storage bucket set to **Public**.
+  - **Base schema already applied:** run the idempotent
+      `supabase/migrations/0002_rls_counters.sql` to add the RLS policies, indexes,
+      denormalized `like_count`/`comment_count` columns, and sync triggers without
+      touching the existing tables.
+  - **Profile fields:** run the idempotent
+      `supabase/migrations/0003_profile_fields.sql` to add `avatar_url`,
+      `cover_url`, `headline`, `bio`, and `location` to `users`. Safe to re-run.
+3. Create two **Public** Storage buckets:
+   - `post-images` — post photos (used by `POST /api/upload` by default).
+   - `avatars` — profile avatars and cover banners (used when the upload
+     request includes `bucket=avatars`). The server uploads with the
+     service-role key, so no Storage RLS policies are required.
 4. In **Settings → API**:
    - Copy **Project URL** → `NEXT_PUBLIC_SUPABASE_URL`.
    - Copy **anon public** key → `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
