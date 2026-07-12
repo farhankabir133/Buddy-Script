@@ -8,10 +8,10 @@ const nextConfig = {
     // plain <img> tags, so Next's image optimizer is not required.
     unoptimized: true,
   },
-  // Emit a self-contained server bundle for small, fast Docker images if a
-  // containerized pipeline is triggered. Vercel ignores this and uses its own
-  // build output, so it is safe to keep for both targets.
-  output: 'standalone',
+  // NOTE: `output: 'standalone'` is intentionally omitted. It emits a
+  // self-contained server for self-hosted/Docker deploys and conflicts with
+  // Vercel's managed build output (Vercel expects a standard `.next`
+  // directory). Re-add it only for non-Vercel container pipelines.
   // Surface build-time type/runtime errors loudly instead of swallowing them.
   typescript: {
     ignoreBuildErrors: false,
