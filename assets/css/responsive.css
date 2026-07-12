@@ -1,0 +1,37 @@
+/* =============================================================================
+   responsive.css — responsive adjustments for the auth and feed layouts.
+   Best-effort regeneration after workspace cleanup.
+   ============================================================================= */
+
+@media (max-width: 1199.98px) {
+  ._custom_container { max-width: 960px; }
+}
+
+@media (max-width: 991.98px) {
+  ._social_login_left,
+  ._social_registration_right { display: none; }
+  ._social_login_content,
+  ._social_registration_content { margin: 0 auto; }
+  ._layout_left_sidebar_wrap { margin-bottom: 16px; }
+}
+
+@media (max-width: 767.98px) {
+  ._social_login_content,
+  ._social_registration_content { padding: 24px; }
+  ._main_layout { padding: 12px 0 40px; }
+  ._feed_inner_timeline_post_area,
+  ._feed_inner_timeline_content,
+  ._feed_inner_timeline_total_reacts,
+  ._feed_inner_timeline_reaction,
+  ._feed_inner_timeline_cooment_area,
+  ._liked_by_wrap { padding-left: 14px; padding-right: 14px; }
+  ._header_form { display: none; }
+  ._shape_img { width: 140px; }
+  ._dark_shape { width: 200px; }
+}
+
+@media (max-width: 575.98px) {
+  ._social_login_form_btn,
+  ._social_registration_form_btn { padding-left: 0; padding-right: 0; }
+  ._feed_inner_text_area_box { flex-direction: column; align-items: stretch; }
+}

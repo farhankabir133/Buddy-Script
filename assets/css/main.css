@@ -1,0 +1,204 @@
+/* =============================================================================
+   main.css — page layouts for auth (login / registration) and the social feed.
+   Best-effort regeneration after workspace cleanup.
+   ============================================================================= */
+
+/* ---- Shared root layout wrapper ---- */
+._layout_main_wrapper {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: var(--color7);
+}
+
+/* ---- Auth: decorative background shapes ---- */
+._shape_one,
+._shape_two,
+._shape_three {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+}
+._shape_one { top: -60px; left: -60px; }
+._shape_two { bottom: -80px; right: -40px; }
+._shape_three { top: 30%; right: 10%; }
+._shape_img { width: 220px; opacity: 0.5; }
+._dark_shape { position: absolute; width: 320px; opacity: 0.12; }
+._dark_shape_opacity { opacity: 0.07; }
+
+._social_login_wrap,
+._social_registration_wrap {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 40px 0;
+}
+._social_login_left_image img,
+._social_registration_right_image img { width: 100%; max-width: 520px; }
+
+._social_login_content,
+._social_registration_content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 36px;
+  box-shadow: var(--shadow-card);
+  max-width: 440px;
+  width: 100%;
+  margin: 0 auto;
+}
+._social_login_content_title,
+._social_registration_content_title { color: var(--color1); }
+._social_login_content_para,
+._social_registration_content_para { color: var(--color2); font-size: 15px; }
+._social_login_left_logo img,
+._social_registration_right_logo img { height: 38px; }
+
+/* ---- Google button ---- */
+._social_login_content_btn {
+  background: #fff;
+  color: var(--color1);
+  border: 1px solid #dcdfe4;
+  gap: 10px;
+}
+._social_login_content_btn:hover { background: #f5f7fa; }
+._google_img { width: 20px; height: 20px; }
+._social_login_content_bottom_txt,
+._social_registration_content_bottom_txt { text-align: center; color: var(--color3); }
+
+._social_login_bottom_txt_para,
+._social_registration_bottom_txt_para { font-size: 14px; color: var(--color2); }
+._social_login_bottom_txt_para a,
+._social_registration_bottom_txt_para a { color: var(--color5); font-weight: 600; }
+
+/* ---- Feed layout ---- */
+._main_layout { position: relative; z-index: 1; padding: 20px 0 60px; }
+
+._custom_container { max-width: 1200px; }
+
+._header_nav {
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  margin-bottom: 20px;
+}
+._nav_logo { height: 34px; }
+._header_nav_profile_image img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; }
+._header_nav_para { margin: 0; font-size: 14px; font-weight: 600; }
+._header_form_svg { color: #666; }
+
+/* ---- Left sidebar cards ---- */
+._layout_left_sidebar_inner { margin-bottom: 16px; }
+._feed_inner_area {
+  background: #fff;
+  box-shadow: var(--shadow-card);
+}
+._left_inner_area_explore_list { list-style: none; padding: 0; margin: 0; }
+._left_inner_area_explore_item { padding: 8px 0; }
+._left_inner_area_explore_link { color: var(--color2); font-size: 15px; font-weight: 500; }
+._left_inner_area_explore_link:hover { color: var(--color5); }
+._left_inner_area_explore_link_txt {
+  font-size: 11px;
+  background: rgba(24, 144, 255, 0.12);
+  color: var(--color5);
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: 6px;
+}
+._left_inner_area_suggest_info { display: flex; align-items: center; gap: 12px; padding: 10px 0; }
+._info_img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; }
+._left_inner_area_suggest_info_title { margin: 0; font-size: 14px; font-weight: 600; }
+._left_inner_area_suggest_info_para { margin: 0; font-size: 12px; color: var(--color3); }
+._info_link { color: var(--color5); font-size: 13px; font-weight: 600; }
+
+/* ---- Composer ---- */
+._feed_inner_text_area {
+  background: #fff;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 16px;
+}
+._feed_inner_text_area_box { display: flex; gap: 12px; align-items: flex-start; }
+._txt_img,
+._feed_inner_timeline_post_box_image img,
+._comment_img1 { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
+._post_img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
+._upload_btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color5);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+}
+._hidden_input { display: none; }
+._preview_img { max-width: 100%; max-height: 220px; border-radius: var(--radius); }
+
+/* ---- Post cards ---- */
+._feed_inner_timeline_post_area {
+  background: #fff;
+  box-shadow: var(--shadow-card);
+}
+._feed_inner_timeline_post_box { display: flex; gap: 12px; align-items: center; }
+._feed_inner_timeline_post_box_title { margin: 0; font-size: 15px; font-weight: 600; }
+._feed_inner_timeline_post_box_para { margin: 0; font-size: 13px; color: var(--color3); }
+._feed_inner_timeline_post_title { margin: 14px 0; font-size: 15px; line-height: 1.5; }
+._time_img { width: 100%; border-radius: var(--radius); margin-top: 12px; }
+
+._feed_inner_timeline_total_reacts { display: flex; gap: 16px; padding: 12px 24px; }
+._feed_inner_timeline_total_reacts_para1,
+._feed_inner_timeline_total_reacts_para2 { margin: 0; font-size: 13px; color: var(--color2); }
+._feed_inner_timeline_reaction { display: flex; gap: 8px; padding: 0 24px 16px; }
+._feed_reaction {
+  border: 0;
+  background: transparent;
+  color: var(--color2);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+._feed_reaction:hover { background: #f0f4f8; }
+._feed_reaction_active { color: var(--color5); background: rgba(24, 144, 255, 0.1); }
+
+/* ---- Comments ---- */
+._feed_inner_timeline_cooment_area { padding: 0 24px 16px; }
+._feed_inner_comment_box { display: flex; gap: 10px; align-items: flex-start; }
+._comment_img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+._comment_textarea { min-height: 44px; resize: vertical; }
+._feed_inner_comment_box_icon_btn {
+  border: 0;
+  background: var(--color5);
+  color: #fff;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  align-self: flex-start;
+}
+._comment_main { padding: 12px 0; border-top: 1px solid #eef1f5; }
+._comment_main:first-child { border-top: 0; }
+._comment_reply { padding: 12px 0 0 40px; }
+._comment_name_title { margin: 0; font-size: 14px; font-weight: 600; }
+._comment_status_text { margin: 0; font-size: 14px; color: var(--color1); }
+._comment_like_btn { border: 0; background: transparent; color: var(--color2); font-weight: 600; cursor: pointer; }
+._comment_like_active { color: var(--color5); }
+._comment_reply_btn { border: 0; background: transparent; color: var(--color5); font-weight: 600; cursor: pointer; }
+._comment_reply_form { margin-top: 10px; }
+
+/* ---- Liked-by popover ---- */
+._liked_by_wrap { padding: 0 24px 12px; }
+._liked_by_toggle { border: 0; background: transparent; color: var(--color2); cursor: pointer; font-size: 13px; }
+._liked_by_list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+._liked_by_item {
+  background: #eef4fb;
+  color: var(--color5);
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+/* ---- Loading skeleton host ---- */
+._feed_inner_timeline_post_area[aria-hidden='true'] { background: #fff; box-shadow: var(--shadow-card); padding: 24px; }

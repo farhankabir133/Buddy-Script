@@ -1,0 +1,130 @@
+/* =============================================================================
+   common.css — design tokens, buttons, form controls, and shared utilities.
+   Best-effort regeneration after workspace cleanup; align with the live design
+   system tokens used across login / registration / feed.
+   ============================================================================= */
+
+:root {
+  --color1: #112032;   /* deep ink (headings, dark shapes) */
+  --color2: #5b6675;   /* muted text */
+  --color3: #959eae;   /* placeholder / inactive */
+  --color4: #e9edf2;   /* skeleton / soft fill */
+  --color5: #1890ff;   /* primary accent */
+  --color6: #e74c3c;   /* danger / error */
+  --color7: #f5f7fa;   /* page background */
+  --radius: 6px;
+  --shadow-card: 0 6px 20px rgba(17, 32, 50, 0.06);
+}
+
+body {
+  background-color: var(--color7);
+  color: var(--color1);
+}
+
+/* ---- Spacing helpers (padding) ---- */
+._padd_t24 { padding-top: 24px; }
+._padd_b24 { padding-bottom: 24px; }
+._padd_r24 { padding-right: 24px; }
+._padd_l24 { padding-left: 24px; }
+._padd_t10 { padding-top: 10px; }
+._padd_b6 { padding-bottom: 6px; }
+._padd_b28 { padding-bottom: 28px; }
+._padd_b8 { padding-bottom: 8px; }
+._padd_b14 { padding-bottom: 14px; }
+._padd_b40 { padding-bottom: 40px; }
+._padd_b50 { padding-bottom: 50px; }
+._padd_b60 { padding-bottom: 60px; }
+._padd_t40 { padding-top: 40px; }
+
+/* ---- Spacing helpers (margin) ---- */
+._mar_b16 { margin-bottom: 16px; }
+._mar_b24 { margin-bottom: 24px; }
+._mar_b28 { margin-bottom: 28px; }
+._mar_b40 { margin-bottom: 40px; }
+._mar_b50 { margin-bottom: 50px; }
+._mar_b60 { margin-bottom: 60px; }
+._mar_b8 { margin-bottom: 8px; }
+._mar_b14 { margin-bottom: 14px; }
+._mar_t12 { margin-top: 12px; }
+._mar_t40 { margin-top: 40px; }
+
+/* ---- Radius + flex helpers ---- */
+._b_radious6 { border-radius: var(--radius); }
+._dis_flex_all {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---- Typography helpers ---- */
+._titl4 { font-size: 26px; font-weight: 700; color: var(--color1); }
+._title5 { font-size: 18px; font-weight: 600; color: var(--color1); }
+
+/* ---- Primary button ---- */
+._btn1,
+._social_login_form_btn_link,
+._social_registration_form_btn_link,
+._feed_inner_text_area_btn_link,
+._social_login_content_btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 12px 18px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--color5);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+._btn1:hover,
+._social_login_form_btn_link:hover,
+._social_registration_form_btn_link:hover,
+._feed_inner_text_area_btn_link:hover {
+  background: #0f7ae5;
+}
+._btn1:disabled,
+._social_login_form_btn_link:disabled,
+._feed_inner_text_area_btn_link:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ---- Form controls (layered over Bootstrap) ---- */
+._social_login_input,
+._social_registration_input,
+._comment_textarea,
+._textarea,
+.form-control {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #dcdfe4;
+  border-radius: var(--radius);
+  font-size: 15px;
+  color: var(--color1);
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+._social_login_input:focus,
+._social_registration_input:focus,
+._comment_textarea:focus,
+._textarea:focus {
+  border-color: var(--color5);
+  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.15);
+  outline: none;
+}
+._social_login_label,
+._social_registration_label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color2);
+}
+
+/* ---- Field error (also defined in globals.css for transitions) ---- */
+._field_error { color: var(--color6); font-size: 13px; margin: 4px 0 0; }
+._social_login_input_error,
+._social_registration_input_error { border-color: var(--color6) !important; }

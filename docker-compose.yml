@@ -1,0 +1,15 @@
+services:
+  app:
+    build:
+      context: .
+      # These are passed through from the --env-file so `next build` has them.
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+        SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+        JWT_SECRET: ${JWT_SECRET}
+    # Injected at runtime so the server can read them on startup.
+    env_file: .env
+    ports:
+      - "3000:3000"
+    restart: unless-stopped

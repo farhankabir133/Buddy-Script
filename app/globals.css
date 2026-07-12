@@ -1,0 +1,211 @@
+@import '../assets/css/bootstrap.min.css';
+@import '../assets/css/common.css';
+@import '../assets/css/main.css';
+@import '../assets/css/responsive.css';
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* ===========================================================================
+   Loading skeletons (task 12) — shimmer placeholders for the feed.
+   =========================================================================== */
+._skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: #e9edf2;
+  border-radius: 8px;
+}
+._skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), transparent);
+  animation: _skeleton-shimmer 1.4s infinite;
+}
+@keyframes _skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+._skeleton_avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+._skeleton_line {
+  height: 12px;
+  margin-bottom: 10px;
+}
+._skeleton_line._w90 {
+  width: 90%;
+}
+._skeleton_line._w70 {
+  width: 70%;
+}
+._skeleton_line._w40 {
+  width: 40%;
+}
+._skeleton_block {
+  height: 180px;
+  margin-top: 12px;
+  border-radius: 6px;
+}
+
+/* ===========================================================================
+   Toast (task 12) — visible error feedback for failed optimistic updates.
+   =========================================================================== */
+._toast_wrap {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+._toast {
+  background: #e74c3c;
+  color: #fff;
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.4;
+  max-width: 320px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  animation: _toast-in 0.2s ease;
+}
+@keyframes _toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===========================================================================
+   Form field error states (task 13) — inline validation feedback.
+   =========================================================================== */
+._social_login_input_error,
+._social_registration_input_error {
+  border-color: #e74c3c !important;
+  box-shadow: 0 0 0 1px #e74c3c;
+}
+._field_error {
+  color: #e74c3c;
+  font-size: 13px;
+  margin: 4px 0 0;
+}
+
+/* ===========================================================================
+   Dynamic component transitions & micro-animations — hardware-accelerated,
+   additive rules layered over the imported utility selectors (structure in
+   assets/css/* is left untouched).
+   =========================================================================== */
+
+/* Smooth Global Interactions */
+._layout_main_wrapper,
+._feed_inner_area,
+._feed_inner_timeline_post_area,
+.form-control {
+  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.2s ease-in-out;
+}
+
+/* Micro-animations for Reactions & Interactions */
+._feed_reaction {
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+              background-color 0.2s ease;
+}
+
+._feed_reaction:active {
+  transform: scale(0.92);
+}
+
+._feed_reaction_active svg {
+  animation: pulseLike 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes pulseLike {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+/* Dynamic Fade-in for New Posts/Comments */
+._feed_inner_timeline_post_area {
+  animation: slideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Accessibility: honor users who prefer reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  ._feed_reaction,
+  ._feed_reaction:active,
+  ._feed_reaction_active svg,
+  ._feed_inner_timeline_post_area {
+    animation: none;
+    transition: none;
+    transform: none;
+  }
+}
+
+/* ===========================================================================
+   Post visibility segmented control — explicit Public / Private buttons so the
+   selected audience is unambiguous (replaces the old stateful checkbox that
+   read as a button).
+   =========================================================================== */
+._privacy_segment {
+  display: inline-flex;
+  border: 1px solid #dcdfe4;
+  border-radius: 6px;
+  overflow: hidden;
+}
+._privacy_option {
+  cursor: pointer;
+  border: 0;
+  padding: 8px 16px;
+  font-size: 14px;
+  color: #959eae;
+  background: transparent;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+._privacy_option + ._privacy_option {
+  border-left: 1px solid #dcdfe4;
+}
+._privacy_option:hover {
+  color: #112032;
+}
+._privacy_option_active {
+  background: var(--color5, #1890ff);
+  color: #fff;
+}
+._privacy_option_active:hover {
+  color: #fff;
+}
