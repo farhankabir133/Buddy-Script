@@ -25,6 +25,7 @@
 [data-theme='dark'] ._feed_inner_timeline_post_area,
 [data-theme='dark'] ._social_login_content,
 [data-theme='dark'] ._social_registration_content,
+[data-theme='dark'] ._composer_card,
 [data-theme='dark'] ._modal,
 [data-theme='dark'] ._drawer {
   background: #1a202c;
