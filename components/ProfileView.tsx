@@ -5,6 +5,8 @@ import { useAuth } from '@/app/context/AuthContext';
 import Avatar from './Avatar';
 import PostCard, { type PostType } from './PostCard';
 import ProfileEditModal from './ProfileEditModal';
+import { MapPin, CalendarDays } from 'lucide-react';
+import ThemeToggle from './ThemeToggle';
 
 type ProfileData = {
   id: string;
@@ -105,6 +107,7 @@ export default function ProfileView({ userId }: { userId: string }) {
               </a>
               <div className="_header_nav_dropdown">
                 <p className="_header_nav_para">{user ? `${user.first_name} ${user.last_name}` : 'Guest'}</p>
+                <ThemeToggle />
               </div>
             </div>
           </div>
@@ -223,11 +226,13 @@ export default function ProfileView({ userId }: { userId: string }) {
                     <ul className="_profile_about_list">
                       {profile.location && (
                         <li className="_profile_about_item">
-                          <span className="_profile_about_icon" aria-hidden="true">📍</span> Lives in {profile.location}
+                          <MapPin size={16} color="var(--color3)" />
+                          Lives in {profile.location}
                         </li>
                       )}
                       <li className="_profile_about_item">
-                        <span className="_profile_about_icon" aria-hidden="true">🗓️</span> Joined {formatJoinDate(profile.created_at)}
+                        <CalendarDays size={16} color="var(--color3)" />
+                        Joined {formatJoinDate(profile.created_at)}
                       </li>
                     </ul>
                     {!profile.bio && !profile.location && (

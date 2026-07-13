@@ -126,7 +126,8 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   className="_social_registration_content_btn _mar_b40"
-                  onClick={() => setError('Google sign-in is not available yet. Please use email and password.')}
+                  disabled
+                  title="Google sign-in coming soon"
                 >
                   <img src="/assets/images/google.svg" alt="Image" className="_google_img" />{' '}
                   <span>Register with google</span>
@@ -212,8 +213,8 @@ export default function RegisterPage() {
                   <div className="row">
                     <div className="col-lg-12 col-md-12 col-xl-12 col-sm-12">
                       <div className="_social_registration_form_btn _mar_t40 _mar_b60">
-                        <button type="submit" className="_social_registration_form_btn_link _btn1" disabled={isSubmitting}>
-                          {isSubmitting ? 'Creating account...' : 'Login now'}
+                         <button type="submit" className="_social_registration_form_btn_link _btn1" disabled={isSubmitting}>
+                          {isSubmitting ? 'Creating account...' : 'Create Account'}
                         </button>
                       </div>
                     </div>

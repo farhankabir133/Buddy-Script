@@ -1,6 +1,5 @@
 /* =============================================================================
    responsive.css — responsive adjustments for the auth and feed layouts.
-   Best-effort regeneration after workspace cleanup.
    ============================================================================= */
 
 @media (max-width: 1199.98px) {
@@ -13,6 +12,7 @@
   ._social_login_content,
   ._social_registration_content { margin: 0 auto; }
   ._layout_left_sidebar_wrap { margin-bottom: 16px; }
+  ._layout_right_sidebar_wrap { display: none !important; }
 }
 
 @media (max-width: 767.98px) {
@@ -28,10 +28,25 @@
   ._header_form { display: none; }
   ._shape_img { width: 140px; }
   ._dark_shape { width: 200px; }
+  ._header_menu_btn { display: inline-flex !important; }
 }
 
 @media (max-width: 575.98px) {
   ._social_login_form_btn,
   ._social_registration_form_btn { padding-left: 0; padding-right: 0; }
   ._feed_inner_text_area_box { flex-direction: column; align-items: stretch; }
+  ._profile_identity { flex-direction: column; align-items: center; text-align: center; }
+  ._profile_actions { width: 100%; }
+  ._profile_edit_btn,
+  ._profile_addfriend_btn { width: 100%; }
+}
+
+@media (max-width: 575.98px) {
+  ._social_login_form_btn,
+  ._social_registration_form_btn { padding-left: 0; padding-right: 0; }
+  ._feed_inner_text_area_box { flex-direction: column; align-items: stretch; }
+  ._profile_identity { flex-direction: column; align-items: center; text-align: center; }
+  ._profile_actions { width: 100%; }
+  ._profile_edit_btn,
+  ._profile_addfriend_btn { width: 100%; }
 }

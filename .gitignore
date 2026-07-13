@@ -25,5 +25,12 @@ yarn-error.log*
 coverage/
 .vercel
 
-# Local agent tooling (not part of the app; may contain credentials)
+# Local agent / editor tooling (not part of the app)
+.agents/
+.cursor/
 .jetro/
+.mcp.json
+.windsurfrules
+AGENT.md
+CLAUDE.md
+tsconfig.tsbuildinfo

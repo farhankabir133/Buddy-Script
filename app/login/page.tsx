@@ -75,7 +75,8 @@ export default function LoginPage() {
                 <button
                   type="button"
                   className="_social_login_content_btn _mar_b40"
-                  onClick={() => setError('Google sign-in is not available yet. Please use email and password.')}
+                  disabled
+                  title="Google sign-in coming soon"
                 >
                   <img src="/assets/images/google.svg" alt="Image" className="_google_img" />{' '}
                   <span>Or sign-in with google</span>

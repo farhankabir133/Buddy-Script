@@ -79,7 +79,7 @@
 ._profile_cover {
   position: relative;
   height: 220px;
-  background: linear-gradient(120deg, #1877f2, #0f5fd1);
+  background: linear-gradient(120deg, var(--color5), #0f5fd1);
 }
 ._profile_cover_img { width: 100%; height: 100%; object-fit: cover; display: block; }
 ._profile_cover_placeholder { width: 100%; height: 100%; }
@@ -238,7 +238,7 @@
 ._profile_edit_cover_preview {
   position: relative;
   height: 160px;
-  background: linear-gradient(120deg, #1877f2, #0f5fd1);
+  background: linear-gradient(120deg, var(--color5), #0f5fd1);
   overflow: hidden;
 }
 ._profile_edit_cover_img { width: 100%; height: 100%; object-fit: cover; }

@@ -6,6 +6,11 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import Link from 'next/link';
 import Avatar from '@/components/Avatar';
 import PostCard, { type PostType } from '@/components/PostCard';
+import MobileBottomNav from '@/components/MobileBottomNav';
+import SideDrawer from '@/components/SideDrawer';
+import RightSidebar from '@/components/RightSidebar';
+import ThemeToggle from '@/components/ThemeToggle';
+import { Search, LogOut, Menu, ImagePlus, Globe, Lock, X } from 'lucide-react';
 
 // Non-blocking, browser-side image compression. Downscales large images to a
 // web-friendly width and re-encodes them as JPEG before upload. Always resolves
@@ -101,6 +106,8 @@ function Feed() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const [toast, setToast] = useState<{ message: string; key: number } | null>(null);
+  const [feedError, setFeedError] = useState<string | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const showToast = useCallback((message: string) => {
     setToast({ message, key: Date.now() });
@@ -115,21 +122,27 @@ function Feed() {
   const loadPosts = useCallback(
     async (pageCursor: string | null = null) => {
       setLoading(true);
+      setFeedError(null);
       try {
         const url = pageCursor ? `/api/posts?cursor=${encodeURIComponent(pageCursor)}` : '/api/posts';
         const res = await fetch(url, { credentials: 'include' });
-        if (!res.ok) return;
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error(body?.error || `Failed to load posts (${res.status})`);
+        }
         const data = await res.json();
         const incoming: PostType[] = data.posts ?? [];
         setPosts((prev) => (pageCursor ? [...prev, ...incoming] : incoming));
         setCursor(data.nextCursor ?? null);
-      } catch {
-        // ignore network errors
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Could not load the feed. Please check your connection.';
+        setFeedError(message);
+        showToast(message);
       } finally {
         setLoading(false);
       }
     },
-    []
+    [showToast]
   );
 
   useEffect(() => {
@@ -235,32 +248,46 @@ function Feed() {
         <nav className="navbar navbar-expand-lg navbar-light _header_nav _padd_t10">
           <div className="container _custom_container">
             <div className="_logo_wrap">
+              <button
+                type="button"
+                className="_header_menu_btn"
+                onClick={() => setDrawerOpen(true)}
+                aria-label="Open menu"
+                style={{
+                  display: 'none',
+                  border: 0,
+                  background: 'transparent',
+                  color: 'var(--color1)',
+                  padding: 4,
+                  marginRight: 8,
+                }}
+              >
+                <Menu size={24} />
+              </button>
               <Link className="navbar-brand" href="/feed">
                 <img src="/assets/images/logo.svg" alt="Buddy Script" className="_nav_logo" />
               </Link>
             </div>
             <div className="_header_form ms-auto">
-              <form className="_header_form_grp" role="search">
-                <svg className="_header_form_svg" xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="none" viewBox="0 0 17 17">
-                  <circle cx="7" cy="7" r="6" stroke="#666" />
-                  <path stroke="#666" strokeLinecap="round" d="M16 16l-3-3" />
-                </svg>
+              <form className="_header_form_grp _header_search_form" role="search">
+                <Search className="_header_form_svg" size={17} color="#666" strokeWidth={2} />
                 <input className="form-control me-2 _inpt1" type="search" placeholder="Search" aria-label="Search" />
               </form>
             </div>
-            <div className="_header_nav_profile">
-              <Link href="/profile" className="_header_nav_profile_image" aria-label="Your profile">
-                <Avatar size="sm" src={user?.avatar_url ?? null} firstName={user?.first_name ?? null} lastName={user?.last_name ?? null} />
-              </Link>
-              <div className="_header_nav_dropdown">
-                <p className="_header_nav_para">{user ? `${user.first_name} ${user.last_name}` : 'Guest'}</p>
-                <button type="button" className="_header_nav_dropdown_btn" onClick={() => logout()}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="10" height="6" fill="none" viewBox="0 0 10 6">
-                    <path fill="#112032" d="M5 5l.354.354L5 5.707l-.354-.353L5 5zm4.354-3.646l-4 4-.708-.708 4-4 .708.708zm-4.708 4l-4-4 .708-.708 4 4-.708.708z" />
-                  </svg>
-                </button>
+              <div className="_header_nav_profile">
+                <Link href="/profile" className="_header_nav_profile_image" aria-label="Your profile">
+                  <Avatar size="sm" src={user?.avatar_url ?? null} firstName={user?.first_name ?? null} lastName={user?.last_name ?? null} />
+                </Link>
+                <div className="_header_nav_dropdown">
+                  <p className="_header_nav_para">{user ? `${user.first_name} ${user.last_name}` : 'Guest'}</p>
+                  <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                    <ThemeToggle />
+                    <button type="button" className="_header_nav_dropdown_btn" onClick={() => logout()} aria-label="Log out">
+                      <LogOut size={16} color="#112032" />
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
           </div>
         </nav>
 
@@ -302,70 +329,82 @@ function Feed() {
 
               <div className="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                 <div className="_layout_middle_wrap">
-                  <div className="_feed_inner_text_area _b_radious6 _padd_b24 _padd_t24 _padd_r24 _padd_l24 _mar_b16">
+                  <div className="_composer_card">
                     <form onSubmit={handleCreate}>
-                      <div className="_feed_inner_text_area_box">
-                        <div className="_feed_inner_text_area_box_image">
-                          <Avatar size="md" src={user?.avatar_url ?? null} firstName={user?.first_name ?? null} lastName={user?.last_name ?? null} />
-                        </div>
-                        <div className="form-floating _feed_inner_text_area_box_form">
-                          <textarea
-                            className="form-control _textarea"
-                            placeholder={`What's on your mind, ${user?.first_name || 'there'}?`}
-                            value={newPost}
-                            onChange={(e) => setNewPost(e.target.value)}
-                          />
+                      <div className="_composer_header">
+                        <Avatar size="md" src={user?.avatar_url ?? null} firstName={user?.first_name ?? null} lastName={user?.last_name ?? null} />
+                        <div className="_composer_header_text">
+                          <span className="_composer_title">Create post</span>
+                          <span className="_composer_privacy">
+                            {isPrivate ? <Lock size={12} /> : <Globe size={12} />}
+                            {isPrivate ? 'Private' : 'Public'}
+                          </span>
                         </div>
                       </div>
+                      <div className="_composer_body">
+                        <textarea
+                          className="_composer_textarea"
+                          placeholder="What's on your mind?"
+                          value={newPost}
+                          onChange={(e) => setNewPost(e.target.value)}
+                        />
+                      </div>
                       {imagePreview && (
-                        <div className="_post_image_preview _mar_t12">
+                        <div className="_composer_image_preview">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={imagePreview} alt="Preview" className="_preview_img" />
+                          <img src={imagePreview} alt="Preview" />
                           <button
                             type="button"
-                            className="_preview_remove"
+                            className="_composer_image_remove"
                             onClick={() => {
                               setImageFile(null);
                               setImagePreview(null);
                             }}
+                            aria-label="Remove image"
                           >
-                            Remove
+                            <X size={16} />
                           </button>
                         </div>
                       )}
-                      <div className="_feed_inner_text_area_bottom">
-                        <div className="_feed_inner_text_area_btn">
-                          <label className="_feed_inner_text_area_btn_link _upload_btn">
-                            <span>{imageFile ? 'Change Image' : 'Add Photo'}</span>
-                            <input
-                              type="file"
-                              accept="image/*"
-                              className="_hidden_input"
-                              onChange={handleImageSelect}
-                            />
-                          </label>
-                          <div className="_privacy_segment" role="group" aria-label="Post visibility">
-                            <button
-                              type="button"
-                              className={`_privacy_option ${!isPrivate ? '_privacy_option_active' : ''}`}
-                              onClick={() => setIsPrivate(false)}
-                              aria-pressed={!isPrivate}
-                            >
-                              Public
-                            </button>
-                            <button
-                              type="button"
-                              className={`_privacy_option ${isPrivate ? '_privacy_option_active' : ''}`}
-                              onClick={() => setIsPrivate(true)}
-                              aria-pressed={isPrivate}
-                            >
-                              Private
-                            </button>
-                          </div>
-                          <button type="submit" className="_feed_inner_text_area_btn_link" disabled={posting}>
-                            <span>{posting ? 'Posting...' : 'Post'}</span>
+                      <div className="_composer_divider" />
+                      <div className="_composer_actions">
+                        <label className="_composer_action _composer_photo_action">
+                          <ImagePlus size={20} />
+                          <span>Photo</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="_hidden_input"
+                            onChange={handleImageSelect}
+                          />
+                        </label>
+                        <div className="_composer_visibility" role="group" aria-label="Post visibility">
+                          <button
+                            type="button"
+                            className={`_composer_visibility_btn ${!isPrivate ? '_composer_visibility_active' : ''}`}
+                            onClick={() => setIsPrivate(false)}
+                            aria-pressed={!isPrivate}
+                            aria-label="Public"
+                          >
+                            <Globe size={18} />
+                          </button>
+                          <button
+                            type="button"
+                            className={`_composer_visibility_btn ${isPrivate ? '_composer_visibility_active' : ''}`}
+                            onClick={() => setIsPrivate(true)}
+                            aria-pressed={isPrivate}
+                            aria-label="Private"
+                          >
+                            <Lock size={18} />
                           </button>
                         </div>
+                        <button
+                          type="submit"
+                          className="_composer_post_btn"
+                          disabled={posting || !newPost.trim()}
+                        >
+                          <span>{posting ? 'Posting...' : 'Post'}</span>
+                        </button>
                       </div>
                     </form>
                   </div>
@@ -376,8 +415,15 @@ function Feed() {
                         <PostSkeleton key={i} />
                       ))}
                     </>
-                  ) : posts.length === 0 ? (
+                  ) : posts.length === 0 && !feedError ? (
                     <p className="_feed_inner_timeline_post_title">No posts yet. Be the first to post!</p>
+                  ) : feedError && posts.length === 0 ? (
+                    <div className="_feed_error_state">
+                      <p className="_feed_inner_timeline_post_title">{feedError}</p>
+                      <button type="button" className="_feed_inner_text_area_btn_link" onClick={() => loadPosts()}>
+                        Try again
+                      </button>
+                    </div>
                   ) : (
                     posts.map((post) => (
                       <PostCard key={post.id} post={post} currentUser={user ? { id: user.id, first_name: user.first_name, last_name: user.last_name } : null} />
@@ -396,10 +442,16 @@ function Feed() {
                   )}
                 </div>
               </div>
+
+              <div className="col-xl-3 col-lg-0 col-md-0 col-sm-0">
+                <RightSidebar />
+              </div>
             </div>
           </div>
         </div>
       </div>
+      <SideDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+      <MobileBottomNav />
       <div className="_toast_wrap">
         {toast && (
           <div className="_toast" role="alert" key={toast.key}>
