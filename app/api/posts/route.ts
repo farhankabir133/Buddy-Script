@@ -11,6 +11,7 @@ type PostRow = {
   user_id: string;
   content: string;
   image_url: string | null;
+  image_urls: string[] | null;
   is_private: boolean;
   created_at: string;
   like_count: number;
@@ -39,17 +40,27 @@ export async function POST(request: Request) {
     if ('response' in parsed) {
       return parsed.response;
     }
-    const { content, image_url, is_private } = parsed.data;
+    const { content, image_url, image_urls, is_private } = parsed.data;
+
+    // Normalize to a single gallery: prefer the new multi-image field, fall back
+    // to the legacy single image_url, then to empty.
+    const gallery: string[] =
+      image_urls && image_urls.length > 0
+        ? image_urls
+        : image_url
+          ? [image_url]
+          : [];
 
     const { data: post, error } = await supabase
       .from('posts')
       .insert({
         user_id: userId,
         content,
-        image_url: image_url ?? null,
+        image_url: gallery[0] ?? null,
+        image_urls: gallery,
         is_private,
       })
-      .select('id, user_id, content, image_url, is_private, created_at')
+      .select('id, user_id, content, image_url, image_urls, is_private, created_at')
       .single();
 
     if (error || !post) {
@@ -92,7 +103,7 @@ export async function GET(request: Request) {
     const limit = 10;
     const query = supabase
       .from('posts')
-      .select('id, user_id, content, image_url, is_private, created_at, like_count, comment_count')
+      .select('id, user_id, content, image_url, image_urls, is_private, created_at, like_count, comment_count')
       .order('created_at', { ascending: false })
       .order('id', { ascending: false })
       .limit(limit + 1);

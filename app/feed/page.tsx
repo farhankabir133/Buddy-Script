@@ -102,8 +102,8 @@ function Feed() {
   const [newPost, setNewPost] = useState('');
   const [posting, setPosting] = useState(false);
   const [isPrivate, setIsPrivate] = useState(false);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
   const [toast, setToast] = useState<{ message: string; key: number } | null>(null);
   const [feedError, setFeedError] = useState<string | null>(null);
@@ -171,20 +171,45 @@ function Feed() {
     return data.url as string;
   };
 
+  const MAX_IMAGES = 10;
+  const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+
   const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      alert('Please select an image file');
+    const files = Array.from(e.target.files ?? []).filter((f) => f.type.startsWith('image/'));
+    e.target.value = '';
+    if (files.length === 0) return;
+
+    const remaining = MAX_IMAGES - imageFiles.length;
+    if (remaining <= 0) {
+      alert(`You can attach up to ${MAX_IMAGES} images per post`);
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      alert('Image must be less than 5MB');
-      return;
-    }
-    const optimizedFile = await compressImageFile(file);
-    setImageFile(optimizedFile);
-    setImagePreview(URL.createObjectURL(optimizedFile));
+    const accepted = files.slice(0, remaining);
+
+    const optimized = await Promise.all(
+      accepted.map(async (file) => {
+        if (file.size > MAX_IMAGE_BYTES) {
+          alert(`"${file.name}" is larger than 5MB and was skipped`);
+          return null;
+        }
+        return compressImageFile(file);
+      })
+    );
+
+    const valid = optimized.filter((f): f is File => f !== null);
+    if (valid.length === 0) return;
+
+    setImageFiles((prev) => [...prev, ...valid]);
+    setImagePreviews((prev) => [...prev, ...valid.map((f) => URL.createObjectURL(f))]);
+  };
+
+  const removeImage = (index: number) => {
+    setImagePreviews((prev) => {
+      const url = prev[index];
+      if (url) URL.revokeObjectURL(url);
+      return prev.filter((_, i) => i !== index);
+    });
+    setImageFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleCreate = async (e: React.FormEvent) => {
@@ -192,13 +217,14 @@ function Feed() {
     const content = newPost.trim();
     if (!content || posting) return;
 
-    const snapshot = { content, isPrivate, imageFile, imagePreview };
+    const snapshot = { content, isPrivate, imageFiles, imagePreviews };
     const tempId = `temp-${Date.now()}`;
     const optimisticPost: PostType = {
       id: tempId,
       user_id: user?.id ?? '',
       content,
-      image_url: imagePreview,
+      image_url: imagePreviews[0] ?? null,
+      image_urls: imagePreviews,
       is_private: isPrivate,
       created_at: new Date().toISOString(),
       first_name: user?.first_name ?? null,
@@ -213,30 +239,30 @@ function Feed() {
     setPosts((prev) => [optimisticPost, ...prev]);
     setNewPost('');
     setIsPrivate(false);
-    setImageFile(null);
-    setImagePreview(null);
+    setImageFiles([]);
+    setImagePreviews([]);
     setPosting(true);
 
     try {
-      let image_url: string | undefined;
-      if (snapshot.imageFile) {
-        image_url = await uploadImage(snapshot.imageFile);
-      }
+      const image_urls = snapshot.imageFiles.length > 0
+        ? await Promise.all(snapshot.imageFiles.map((f) => uploadImage(f)))
+        : [];
       const res = await fetch('/api/posts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ content: snapshot.content, image_url, is_private: snapshot.isPrivate }),
+        body: JSON.stringify({ content: snapshot.content, image_urls, is_private: snapshot.isPrivate }),
       });
       if (!res.ok) throw new Error('failed');
       const data = await res.json();
       setPosts((prev) => prev.map((p) => (p.id === tempId ? data.post : p)));
+      snapshot.imagePreviews.forEach((url) => URL.revokeObjectURL(url));
     } catch {
       setPosts((prev) => prev.filter((p) => p.id !== tempId));
       setNewPost(snapshot.content);
       setIsPrivate(snapshot.isPrivate);
-      setImageFile(snapshot.imageFile);
-      setImagePreview(snapshot.imagePreview);
+      setImageFiles(snapshot.imageFiles);
+      setImagePreviews(snapshot.imagePreviews);
       showToast('Could not publish your post. Please try again.');
     } finally {
       setPosting(false);
@@ -350,31 +376,33 @@ function Feed() {
                           onChange={(e) => setNewPost(e.target.value)}
                         />
                       </div>
-                      {imagePreview && (
-                        <div className="_composer_image_preview">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={imagePreview} alt="Preview" />
-                          <button
-                            type="button"
-                            className="_composer_image_remove"
-                            onClick={() => {
-                              setImageFile(null);
-                              setImagePreview(null);
-                            }}
-                            aria-label="Remove image"
-                          >
-                            <X size={16} />
-                          </button>
+                      {imagePreviews.length > 0 && (
+                        <div className="_composer_image_preview_grid">
+                          {imagePreviews.map((src, i) => (
+                            <div className="_composer_image_preview" key={src + i}>
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={src} alt={`Preview ${i + 1}`} />
+                              <button
+                                type="button"
+                                className="_composer_image_remove"
+                                onClick={() => removeImage(i)}
+                                aria-label={`Remove image ${i + 1}`}
+                              >
+                                <X size={16} />
+                              </button>
+                            </div>
+                          ))}
                         </div>
                       )}
                       <div className="_composer_divider" />
                       <div className="_composer_actions">
                         <label className="_composer_action _composer_photo_action">
                           <ImagePlus size={20} />
-                          <span>Photo</span>
+                          <span>Photo{imageFiles.length > 0 ? ` (${imageFiles.length})` : ''}</span>
                           <input
                             type="file"
                             accept="image/*"
+                            multiple
                             className="_hidden_input"
                             onChange={handleImageSelect}
                           />

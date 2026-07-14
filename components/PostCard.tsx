@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import PostHeader from './PostHeader';
 import PostContent from './PostContent';
 import ReactionBar from './ReactionBar';
@@ -53,6 +53,7 @@ export type PostType = {
   user_id: string;
   content: string;
   image_url: string | null;
+  image_urls?: string[] | null;
   is_private: boolean;
   created_at: string;
   first_name: string | null;
@@ -339,13 +340,40 @@ export default function PostCard({
   const like = likeState[post.id] || { liked: false, count: 0, likers: [] };
 
   const postComments = commentPaginationState[post.id]?.items || [];
-  const topLevelComments = postComments.filter((c) => c.parent_id === null);
+
+  const renderComments = (parentId: string | null, depth: number): ReactNode => {
+    const children = postComments
+      .filter((c) => c.parent_id === parentId)
+      .sort((a, b) =>
+        a.created_at === b.created_at
+          ? a.id.localeCompare(b.id)
+          : a.created_at.localeCompare(b.created_at)
+      );
+    return children.map((c) => (
+      <CommentItem
+        key={c.id}
+        comment={c}
+        isReply={parentId !== null}
+        depth={parentId !== null ? depth : undefined}
+        likeState={likeState[c.id] || { liked: false, count: 0, likers: [] }}
+        onLike={(targetId) => handleLike('comment', targetId)}
+        onReply={handleReply}
+        replyingTo={replyingTo}
+        setReplyingTo={setReplyingTo}
+        replyDraft={replyDraft[c.id] || ''}
+        setReplyDraft={(patch) => setReplyDraft((prev) => ({ ...prev, ...patch }))}
+        toggleLikers={toggleLikers}
+      >
+        {renderComments(c.id, depth + 1)}
+      </CommentItem>
+    ));
+  };
 
   return (
     <div className="_feed_inner_timeline_post_area _b_radious6 _padd_b24 _padd_t24 _mar_b16">
       <div className="_feed_inner_timeline_content _padd_r24 _padd_l24">
         <PostHeader post={post} currentUser={currentUser} />
-        <PostContent content={post.content} image_url={post.image_url} />
+        <PostContent content={post.content} image_url={post.image_url} image_urls={post.image_urls} />
       </div>
 
       <ReactionBar
@@ -374,21 +402,7 @@ export default function PostCard({
       />
 
       <div className="_timline_comment_main">
-        {topLevelComments.map((c) => (
-            <CommentItem
-              key={c.id}
-              comment={c}
-              isReply={false}
-              likeState={likeState[c.id] || { liked: false, count: 0, likers: [] }}
-              onLike={(targetId) => handleLike('comment', targetId)}
-              onReply={handleReply}
-              replyingTo={replyingTo}
-              setReplyingTo={setReplyingTo}
-              replyDraft={replyDraft[c.id] || ''}
-              setReplyDraft={(patch) => setReplyDraft((prev) => ({ ...prev, ...patch }))}
-              toggleLikers={toggleLikers}
-            />
-        ))}
+        {renderComments(null, 0)}
 
         {commentPaginationState[post.id]?.nextCursor && (
           <div className="_previous_comment text-center my-2">

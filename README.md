@@ -11,6 +11,8 @@ Implements authentication, post creation with media, threaded comments with like
 - **Profile name editing:** users can update their first and last name anytime from the Edit Profile modal.
 - **Feed avatars:** posts now show the author's profile photo when available; otherwise the existing initials fallback is used.
 - **Unified image aspect ratio:** feed post images, composer previews, and profile photo grid images use a consistent aspect ratio. Images are displayed with `object-fit: contain` so details are not cropped.
+- **Multi-image posts:** the composer now accepts multiple images (up to 10) with per-image previews and remove controls; posts render as a structured grid gallery (1, 2, 3 or  ­2×2 layout with a `+N` overflow) and open in a full-screen lightbox. Images are stored in a new `image_urls TEXT[]` column.
+- **Nested comment replies:** comments now support multi-level threaded replies. Any comment or reply can be replied to, and the full thread renders recursively under its parent.
 
 ---
 
@@ -57,7 +59,7 @@ Implements authentication, post creation with media, threaded comments with like
 
 ### Feed
 - Cursor-paginated public feed ordered by newest first
-- Create posts with text and optional image upload (client-side compression)
+- Create posts with text and up to 10 optional image uploads (client-side compression), rendered as a structured grid gallery
 - Public / private post visibility (private visible only to author)
 - Optimistic post creation with rollback on failure
 - Loading skeletons and error retry UI
@@ -66,7 +68,7 @@ Implements authentication, post creation with media, threaded comments with like
 
 ### Posts, Comments & Likes
 - Like / unlike posts and comments (optimistic UI)
-- Threaded comments and replies via `parent_id`
+- Multi-level threaded comments and replies via `parent_id`; any comment or reply can be replied to, with the full thread rendered recursively
 - Cursor-paginated comments per post
 - Show who liked a post, comment, or reply with expandable likers list
 
@@ -85,6 +87,7 @@ Implements authentication, post creation with media, threaded comments with like
 - Accessible focus rings and reduced-motion support
 - Composer Post button stays fully visible on all screen sizes
 - Images use consistent aspect ratios with `object-fit: contain` to preserve full content
+- Multi-image posts render as a premium grid gallery with hover zoom and a full-screen lightbox (keyboard navigable)
 
 ---
 
@@ -153,6 +156,7 @@ supabase/
     migration.sql
     0002_rls_counters.sql
     0003_profile_fields.sql
+    0004_post_image_gallery.sql
 tests/
   api/
     posts.test.ts
@@ -170,7 +174,7 @@ tests/
 | `POST` | `/api/auth/logout` | Clear session cookie |
 | `GET` | `/api/auth/me` | Return current user from session |
 | `GET` | `/api/posts` | Cursor-paginated feed (public + own private posts) |
-| `POST` | `/api/posts` | Create post with optional image and visibility flag |
+| `POST` | `/api/posts` | Create post; accepts `image_urls` (array, up to 10) and visibility flag |
 | `GET` | `/api/comments` | Cursor-paginated comments/replies for a post |
 | `POST` | `/api/comments` | Create comment or reply |
 | `GET` | `/api/likes` | List likers for a post or comment |
@@ -202,7 +206,8 @@ posts(
   id UUID PK,
   user_id UUID FK -> users(id),
   content TEXT,
-  image_url TEXT,
+  image_url TEXT,            -- first gallery image (convenience alias)
+  image_urls TEXT[] NOT NULL DEFAULT '{}',  -- multi-image gallery
   is_private BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   like_count INTEGER NOT NULL DEFAULT 0,
@@ -239,7 +244,7 @@ Requires **Node 20 LTS**.
 ```bash
 npm install
 cp .env.example .env.local
-# Apply supabase/migrations/migration.sql in Supabase SQL editor
+# Apply all files in supabase/migrations/ in order (migration.sql, then 0002..0004) in the Supabase SQL editor
 npm run dev
 ```
 
@@ -293,7 +298,7 @@ docker compose --env-file .env up --build
 ## Deployment
 
 ### Supabase
-1. Create a project and apply `supabase/migrations/migration.sql`.
+1. Create a project and apply every file in `supabase/migrations/` in numeric order (incl. `0004_post_image_gallery.sql` for the multi-image gallery).
 2. Create public buckets: `post-images` and `avatars`.
 3. Set **JWT Secret** to the same value as `JWT_SECRET`.
 4. Copy `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`.

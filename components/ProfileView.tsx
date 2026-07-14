@@ -87,7 +87,13 @@ export default function ProfileView({ userId }: { userId: string }) {
   }, [loadProfile, loadPosts]);
 
   const name = profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'Buddy Member' : '...';
-  const photoPosts = posts.filter((p) => p.image_url);
+  const photoPosts = posts.filter((p) => (p.image_urls && p.image_urls.length > 0) || p.image_url);
+  const photos = photoPosts.flatMap((p) =>
+    (p.image_urls && p.image_urls.length > 0 ? p.image_urls : p.image_url ? [p.image_url] : []).map((src) => ({
+      postId: p.id,
+      src,
+    }))
+  );
 
   const viewer = user ? { id: user.id, first_name: user.first_name, last_name: user.last_name } : null;
 
@@ -248,10 +254,10 @@ export default function ProfileView({ userId }: { userId: string }) {
                       <p className="_profile_about_empty">No photos yet.</p>
                     ) : (
                       <div className="_profile_photos_grid">
-                        {photoPosts.map((p) => (
-                          <a key={p.id} href={`/feed?post=${p.id}`} className="_profile_photo">
+                        {photos.map((photo) => (
+                          <a key={photo.postId + photo.src} href={`/feed?post=${photo.postId}`} className="_profile_photo">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={p.image_url as string} alt="" />
+                            <img src={photo.src} alt="" />
                           </a>
                         ))}
                       </div>

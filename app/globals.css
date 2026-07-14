@@ -110,6 +110,7 @@
 
 [data-theme='dark'] ._profile_photo,
 [data-theme='dark'] ._time_img,
+[data-theme='dark'] ._post_media_tile,
 [data-theme='dark'] ._composer_image_preview {
   background: #1a202c;
 }

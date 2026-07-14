@@ -37,6 +37,10 @@ export const createPostSchema = z.object({
   image_url: z
     .preprocess((v) => (v === '' || v === null ? undefined : v), z.string().url('Invalid image URL'))
     .optional(),
+  image_urls: z
+    .array(z.string().url('Invalid image URL'))
+    .max(10, 'You can attach up to 10 images')
+    .optional(),
   is_private: z.boolean().optional().default(false),
 });
 

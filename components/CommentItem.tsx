@@ -2,6 +2,9 @@
 
 import Avatar from './Avatar';
 import { Heart } from 'lucide-react';
+import type { ReactNode } from 'react';
+
+const MAX_REPLY_INDENT = 4;
 
 type CommentItemProps = {
   comment: {
@@ -17,6 +20,7 @@ type CommentItemProps = {
     created_at: string;
   };
   isReply?: boolean;
+  depth?: number;
   likeState: { liked: boolean; count: number; likers: Array<{ user_id: string; first_name: string | null; last_name: string | null }> };
   onLike: (targetId: string) => void;
   onReply: (postId: string, parentId: string) => void;
@@ -25,11 +29,13 @@ type CommentItemProps = {
   replyDraft: string;
   setReplyDraft: (draft: Record<string, string>) => void;
   toggleLikers: (targetId: string) => void;
+  children?: ReactNode;
 };
 
 export default function CommentItem({
   comment,
   isReply = false,
+  depth = 1,
   likeState,
   onLike,
   onReply,
@@ -38,14 +44,20 @@ export default function CommentItem({
   replyDraft,
   setReplyDraft,
   toggleLikers,
+  children,
 }: CommentItemProps) {
   const handleReplySubmit = () => {
     if (!replyDraft.trim()) return;
     onReply(comment.post_id, comment.id);
   };
 
+  const indent = isReply ? Math.min(Math.max(depth, 1), MAX_REPLY_INDENT) * 40 : 0;
+
   return (
-    <div className={isReply ? '_comment_reply' : '_comment_main'}>
+    <div
+      className={isReply ? '_comment_reply' : '_comment_main'}
+      style={isReply ? { paddingLeft: indent } : undefined}
+    >
       <div className="_comment_image">
         <Avatar size="sm" firstName={comment.author} lastName="" />
       </div>
@@ -66,15 +78,13 @@ export default function CommentItem({
           >
             {likeState.liked ? 'Liked' : 'Like'}
           </button>
-          {!isReply && (
-            <button
-              type="button"
-              className="_comment_reply_btn"
-              onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
-            >
-              Reply
-            </button>
-          )}
+          <button
+            type="button"
+            className="_comment_reply_btn"
+            onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
+          >
+            Reply
+          </button>
           <button
             type="button"
             className="_liked_by_toggle"
@@ -116,6 +126,7 @@ export default function CommentItem({
           </div>
         )}
       </div>
+      {children}
     </div>
   );
 }
