@@ -41,6 +41,12 @@ export const createPostSchema = z.object({
 });
 
 export const updateProfileSchema = z.object({
+  first_name: z
+    .preprocess((v) => (v === '' ? undefined : v), z.string().trim().max(50, 'First name must not exceed 50 characters'))
+    .optional(),
+  last_name: z
+    .preprocess((v) => (v === '' ? undefined : v), z.string().trim().max(50, 'Last name must not exceed 50 characters'))
+    .optional(),
   avatar_url: z
     .preprocess((v) => (v === '' || v === null ? undefined : v), z.string().url('Invalid avatar URL'))
     .optional(),

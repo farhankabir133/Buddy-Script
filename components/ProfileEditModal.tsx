@@ -5,6 +5,9 @@ import { useAuth } from '@/app/context/AuthContext';
 import Avatar from './Avatar';
 
 type Profile = {
+  id?: string;
+  first_name?: string | null;
+  last_name?: string | null;
   avatar_url?: string | null;
   cover_url?: string | null;
   headline?: string | null;
@@ -17,6 +20,9 @@ type ProfileEditModalProps = {
   onClose: () => void;
   profile: Profile;
   onSaved?: (user: {
+    id?: string;
+    first_name: string | null;
+    last_name: string | null;
     avatar_url: string | null;
     cover_url: string | null;
     headline: string | null;
@@ -70,6 +76,8 @@ function compressImageFile(file: File): Promise<File> {
 
 export default function ProfileEditModal({ open, onClose, profile, onSaved }: ProfileEditModalProps) {
   const { user, updateUser } = useAuth();
+  const [firstName, setFirstName] = useState(profile.first_name ?? '');
+  const [lastName, setLastName] = useState(profile.last_name ?? '');
   const [headline, setHeadline] = useState(profile.headline ?? '');
   const [bio, setBio] = useState(profile.bio ?? '');
   const [location, setLocation] = useState(profile.location ?? '');
@@ -141,6 +149,8 @@ export default function ProfileEditModal({ open, onClose, profile, onSaved }: Pr
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
+          first_name: firstName.trim() || undefined,
+          last_name: lastName.trim() || undefined,
           avatar_url: avatarPreview ?? undefined,
           cover_url: coverPreview ?? undefined,
           headline: headline.trim() || undefined,
@@ -154,6 +164,8 @@ export default function ProfileEditModal({ open, onClose, profile, onSaved }: Pr
       }
       const data = await res.json();
       updateUser({
+        first_name: data.user.first_name,
+        last_name: data.user.last_name,
         avatar_url: data.user.avatar_url,
         cover_url: data.user.cover_url,
         headline: data.user.headline,
@@ -161,6 +173,9 @@ export default function ProfileEditModal({ open, onClose, profile, onSaved }: Pr
         location: data.user.location,
       });
       onSaved?.({
+        id: data.user.id,
+        first_name: data.user.first_name,
+        last_name: data.user.last_name,
         avatar_url: data.user.avatar_url,
         cover_url: data.user.cover_url,
         headline: data.user.headline,
@@ -208,6 +223,26 @@ export default function ProfileEditModal({ open, onClose, profile, onSaved }: Pr
         </div>
 
         <div className="_profile_edit_fields">
+          <label className="_field_label">
+            First name
+            <input
+              className="form-control"
+              maxLength={50}
+              placeholder="First name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+          </label>
+          <label className="_field_label">
+            Last name
+            <input
+              className="form-control"
+              maxLength={50}
+              placeholder="Last name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
+          </label>
           <label className="_field_label">
             Headline
             <input
