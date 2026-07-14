@@ -168,8 +168,8 @@
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 10px;
 }
-._profile_photo { display: block; border-radius: var(--radius); overflow: hidden; aspect-ratio: 1 / 1; background: #eef1f5; }
-._profile_photo img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.2s ease; }
+._profile_photo { display: block; border-radius: var(--radius); overflow: hidden; aspect-ratio: 1 / 1; background: #f5f7fa; }
+._profile_photo img { width: 100%; height: 100%; object-fit: contain; display: block; transition: transform 0.2s ease; }
 ._profile_photo:hover img { transform: scale(1.04); }
 
 /* ---- Not found / skeleton ---- */

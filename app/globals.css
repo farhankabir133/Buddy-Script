@@ -108,8 +108,10 @@
   background: rgba(255, 255, 255, 0.06);
 }
 
-[data-theme='dark'] ._profile_photo {
-  background: #1e2732;
+[data-theme='dark'] ._profile_photo,
+[data-theme='dark'] ._time_img,
+[data-theme='dark'] ._composer_image_preview {
+  background: #1a202c;
 }
 
 [data-theme='dark'] ._profile_edit_avatar {

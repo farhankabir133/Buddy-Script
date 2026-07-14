@@ -175,7 +175,8 @@
   display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
-  object-fit: cover;
+  object-fit: contain;
+  background: #f5f7fa;
 }
 ._composer_image_remove {
   position: absolute;
@@ -296,7 +297,7 @@
 ._feed_inner_timeline_post_box_title { margin: 0; font-size: 15px; font-weight: 600; }
 ._feed_inner_timeline_post_box_para { margin: 0; font-size: 13px; color: var(--color3); }
 ._feed_inner_timeline_post_title { margin: 14px 0; font-size: 15px; line-height: 1.5; }
-._time_img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--radius); margin-top: 12px; display: block; }
+._time_img { width: 100%; aspect-ratio: 16 / 9; object-fit: contain; background: #f5f7fa; border-radius: var(--radius); margin-top: 12px; display: block; }
 
 ._feed_inner_timeline_total_reacts { display: flex; gap: 16px; padding: 12px 24px; }
 ._feed_inner_timeline_total_reacts_para1,
