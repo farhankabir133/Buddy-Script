@@ -20,6 +20,7 @@ type PostRow = {
 type FeedPost = PostRow & {
   first_name: string | null;
   last_name: string | null;
+  avatar_url: string | null;
   like_count: number;
   comment_count: number;
   liked: boolean;
@@ -59,7 +60,7 @@ export async function POST(request: Request) {
     // identity instead of a placeholder for the freshly-created post.
     const { data: authorUser } = await supabase
       .from('users')
-      .select('first_name, last_name')
+      .select('first_name, last_name, avatar_url')
       .eq('id', post.user_id)
       .single();
 
@@ -67,6 +68,7 @@ export async function POST(request: Request) {
       ...(post as PostRow),
       first_name: authorUser?.first_name ?? null,
       last_name: authorUser?.last_name ?? null,
+      avatar_url: authorUser?.avatar_url ?? null,
       like_count: 0,
       comment_count: 0,
       liked: false,
@@ -130,7 +132,7 @@ export async function GET(request: Request) {
 
     const likedByUser = new Set<string>();
     const likersMap: Record<string, Array<{ user_id: string; first_name: string | null; last_name: string | null }>> = {};
-    const usersMap: Record<string, { first_name: string | null; last_name: string | null }> = {};
+    const usersMap: Record<string, { first_name: string | null; last_name: string | null; avatar_url: string | null }> = {};
 
     if (ids.length > 0) {
       // Likers list per post (who liked) plus the author profiles for each post,
@@ -140,11 +142,11 @@ export async function GET(request: Request) {
         userId
           ? supabase.from('post_likes').select('post_id').in('post_id', ids).eq('user_id', userId)
           : Promise.resolve({ data: [] as { post_id: string }[], error: null }),
-        supabase.from('users').select('id, first_name, last_name').in('id', authorIds),
+        supabase.from('users').select('id, first_name, last_name, avatar_url').in('id', authorIds),
       ]);
 
-      for (const u of (authorUsers || []) as { id: string; first_name: string | null; last_name: string | null }[]) {
-        usersMap[u.id] = { first_name: u.first_name, last_name: u.last_name };
+      for (const u of (authorUsers || []) as { id: string; first_name: string | null; last_name: string | null; avatar_url: string | null }[]) {
+        usersMap[u.id] = { first_name: u.first_name, last_name: u.last_name, avatar_url: u.avatar_url };
       }
 
       for (const row of (likeRows || []) as { post_id: string; user_id: string; users: { first_name: string | null; last_name: string | null } | { first_name: string | null; last_name: string | null }[] | null }[]) {
@@ -165,6 +167,7 @@ export async function GET(request: Request) {
       ...p,
       first_name: usersMap[p.user_id]?.first_name ?? null,
       last_name: usersMap[p.user_id]?.last_name ?? null,
+      avatar_url: usersMap[p.user_id]?.avatar_url ?? null,
       like_count: p.like_count,
       comment_count: p.comment_count,
       liked: likedByUser.has(p.id),

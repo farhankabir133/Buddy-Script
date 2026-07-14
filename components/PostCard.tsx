@@ -57,6 +57,7 @@ export type PostType = {
   created_at: string;
   first_name: string | null;
   last_name: string | null;
+  avatar_url: string | null;
   like_count: number;
   comment_count: number;
   liked: boolean;

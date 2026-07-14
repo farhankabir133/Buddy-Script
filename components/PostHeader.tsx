@@ -29,6 +29,7 @@ type PostHeaderProps = {
     user_id: string;
     first_name: string | null;
     last_name: string | null;
+    avatar_url: string | null;
     created_at: string;
     is_private: boolean;
   };
@@ -49,7 +50,7 @@ export default function PostHeader({ post, currentUser }: PostHeaderProps) {
           <Link href={`/profile/${post.user_id}`} aria-label={authorName}>
             <Avatar
               size="md"
-              src={null}
+              src={post.avatar_url}
               firstName={post.first_name}
               lastName={post.last_name}
             />

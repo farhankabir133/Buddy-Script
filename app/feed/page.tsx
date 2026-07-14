@@ -203,6 +203,7 @@ function Feed() {
       created_at: new Date().toISOString(),
       first_name: user?.first_name ?? null,
       last_name: user?.last_name ?? null,
+      avatar_url: user?.avatar_url ?? null,
       like_count: 0,
       comment_count: 0,
       liked: false,
