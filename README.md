@@ -5,6 +5,13 @@ Implements authentication, post creation with media, threaded comments with like
 
 > Security and RLS details are documented in [`SECURITY.md`](./SECURITY.md).
 
+## Recent updates
+
+- **Post button:** composer action row now wraps cleanly on narrow screens, and the Post button stays fully visible without cutting edges.
+- **Profile name editing:** users can update their first and last name anytime from the Edit Profile modal.
+- **Feed avatars:** posts now show the author's profile photo when available; otherwise the existing initials fallback is used.
+- **Unified image aspect ratio:** feed post images, composer previews, and profile photo grid images use a consistent aspect ratio. Images are displayed with `object-fit: contain` so details are not cropped.
+
 ---
 
 ## Table of contents
@@ -54,6 +61,8 @@ Implements authentication, post creation with media, threaded comments with like
 - Public / private post visibility (private visible only to author)
 - Optimistic post creation with rollback on failure
 - Loading skeletons and error retry UI
+- Post author avatar shown when available; initials used as fallback
+- Feed images maintain a unified aspect ratio without cropping content
 
 ### Posts, Comments & Likes
 - Like / unlike posts and comments (optimistic UI)
@@ -65,6 +74,7 @@ Implements authentication, post creation with media, threaded comments with like
 - View own or any user's profile (avatar, cover, headline, bio, location)
 - Post count, Posts / About / Photos tabs
 - Edit profile modal with image upload for avatar and cover
+- Update first and last name anytime from Edit Profile modal
 - Profile not-found state
 
 ### UI/UX
@@ -73,6 +83,8 @@ Implements authentication, post creation with media, threaded comments with like
 - Dark mode toggle with system-preference support, persists user choice
 - Unified design tokens for color, typography, spacing
 - Accessible focus rings and reduced-motion support
+- Composer Post button stays fully visible on all screen sizes
+- Images use consistent aspect ratios with `object-fit: contain` to preserve full content
 
 ---
 
